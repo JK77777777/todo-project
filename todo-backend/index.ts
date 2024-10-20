@@ -19,32 +19,33 @@ sequelize.sync({ force: true })
     .then(() => console.log('Database & tables created!'))
     .catch((error) => console.error('Error creating database:', error));
 
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+// Define the POST /todos route
+app.post('/todos', async (req, res) => {
+    const { text } = req.body;
+    try {
+        const newTodo = await Todo.create({ text });
+        res.status(201).json(newTodo);
+    } catch (error) {
+        console.error('Error creating todos:', error);
+        res.status(500).json({ error: 'Failed to create new todo'});
+    }
 });
 
 // Define the GET /todos route
 app.get('/todos', async (req, res) => {
+    const { text } = req.body;
     try {
         const todos = await Todo.findAll();
-        res.json(todos);
+        res.status(200).json(todos);
     } catch (error) {
-        console.error('Error fetching todos:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('Error fetching todos', error);
+        res.status(500).json({ error: 'Failed to retrieve todos'});
     }
 });
 
-// Define the POST /todos route
-app.post('/todos', async (req, res) => {
-    const { text, isDone } = req.body;
-    try {
-        const newTodo = await Todo.create({ text, isDone });
-        res.status(201).json(newTodo);
-    } catch (error) {
-        console.error('Error creating todo:', error);
-        res.status(400).json({ error: 'Bad request' });
-    }
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
 
 // Export the app for testing
