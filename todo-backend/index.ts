@@ -43,6 +43,43 @@ app.get('/todos', async (req, res) => {
     }
 });
 
+// Define the PUT /todos route
+app.put('/todos/:id', async (req, res) => {
+    const { id } = req.params;
+    const { text, isDone } = req.body;
+    try {
+        const todo = await Todo.findByPk(id);
+        if (!todo) return res.status(404).json({ error: 'Todo not found' });
+
+        todo.text = text !== undefined ? text : todo.text;
+        todo.isDone = isDone !== undefined ? isDone : todo.isDone;
+        await todo.save();
+
+        res.status(200).json(todo);
+    } catch (error) {
+        console.error('Error editing todo', error);
+        res.status(500).json({ error: 'Failed to update todo' });
+    }
+});
+
+// Define the DELETE /todos route
+app.delete('/todos/:id', async (req, res) => {
+    const { id } = req.params;
+    const { text } = req.body;
+    try {
+        const todo = await Todo.findByPk(id);
+        if (!todo) return res.status(404).json({ error: 'Todo not found' });
+
+        await todo.destroy();
+
+        res.status(204).send();
+    }
+    catch (error) {
+        console.error('Error deleting todo', error);
+        res.status(500).json({ error: 'Failed to delete todo'})
+    }
+});
+
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
