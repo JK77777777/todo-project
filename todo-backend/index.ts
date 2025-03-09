@@ -1,89 +1,98 @@
-import express from 'express';
+import express, { Request, Response, RequestHandler } from 'express';
 import cors from 'cors';
 import sequelize from './db';
 import Todo from './models/Todo';
 
 const app = express();
-const PORT = 5001; // Change this if needed
+const router = express.Router();
+const PORT = 5001;
 
 app.use(cors());
-app.use(express.json()); // For parsing application/json
+app.use(express.json());
+app.use('/todos', router);
 
-// Check database connection
+// Check Database Connection
 sequelize.authenticate()
-    .then(() => console.log('Connection has been established successfully.'))
-    .catch(err => console.error('Unable to connect to the database:', err));
+    .then(() => console.log('Database connected'))
+    .catch(err => console.error('Database connection error:', err));
 
-// Sync models
-sequelize.sync({ force: true })
-    .then(() => console.log('Database & tables created!'))
-    .catch((error) => console.error('Error creating database:', error));
+sequelize.sync({ force: true }) 
+    .then(() => console.log('Database & tables synced'))
+    .catch(error => console.error('Error syncing database:', error));
 
-// Define the POST /todos route
-app.post('/todos', async (req, res) => {
+// POST /todos - Create a New Todo
+const createTodoHandler: RequestHandler<{}, {}, { text: string }> = async (req, res): Promise<void> => {
     const { text } = req.body;
+
     try {
         const newTodo = await Todo.create({ text });
         res.status(201).json(newTodo);
     } catch (error) {
-        console.error('Error creating todos:', error);
-        res.status(500).json({ error: 'Failed to create new todo'});
+        console.error('Error creating todo:', error);
+        res.status(500).json({ error: 'Failed to create new todo' });
     }
-});
+};
 
-// Define the GET /todos route
-app.get('/todos', async (req, res) => {
-    const { text } = req.body;
+// GET /todos - Retrieve All Todos
+const getTodosHandler: RequestHandler = async (req, res): Promise<void> => {
     try {
         const todos = await Todo.findAll();
         res.status(200).json(todos);
     } catch (error) {
-        console.error('Error fetching todos', error);
-        res.status(500).json({ error: 'Failed to retrieve todos'});
+        console.error('Error retrieving todos:', error);
+        res.status(500).json({ error: 'Failed to retrieve todos' });
     }
-});
+};
 
-// Define the PUT /todos route
-app.put('/todos/:id', async (req, res) => {
+// PUT /todos/:id - Edit a Todo
+const updateTodoHandler: RequestHandler<{ id: string }, {}, { text?: string; isDone?: boolean }> = async (req, res): Promise<void> => {
     const { id } = req.params;
     const { text, isDone } = req.body;
+
     try {
         const todo = await Todo.findByPk(id);
-        if (!todo) return res.status(404).json({ error: 'Todo not found' });
+        if (!todo) {
+            res.status(404).json({ error: 'Todo not found' });
+            return;
+        }
 
-        todo.text = text !== undefined ? text : todo.text;
-        todo.isDone = isDone !== undefined ? isDone : todo.isDone;
+        if (text !== undefined) todo.text = text;
+        if (isDone !== undefined) todo.isDone = isDone;
+
         await todo.save();
-
         res.status(200).json(todo);
     } catch (error) {
-        console.error('Error editing todo', error);
+        console.error('Error updating todo:', error);
         res.status(500).json({ error: 'Failed to update todo' });
     }
-});
+};
 
-// Define the DELETE /todos route
-app.delete('/todos/:id', async (req, res) => {
+// DELETE /todos/:id - Remove a Todo
+const deleteTodoHandler: RequestHandler<{ id: string }> = async (req, res): Promise<void> => {
     const { id } = req.params;
-    const { text } = req.body;
+
     try {
         const todo = await Todo.findByPk(id);
-        if (!todo) return res.status(404).json({ error: 'Todo not found' });
+        if (!todo) {
+            res.status(404).json({ error: 'Todo not found' });
+            return;
+        }
 
         await todo.destroy();
-
         res.status(204).send();
+    } catch (error) {
+        console.error('Error deleting todo:', error);
+        res.status(500).json({ error: 'Failed to delete todo' });
     }
-    catch (error) {
-        console.error('Error deleting todo', error);
-        res.status(500).json({ error: 'Failed to delete todo'})
-    }
-});
+};
 
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+// Register Routes
+router.post('/', createTodoHandler);
+router.get('/', getTodosHandler);
+router.put('/:id', updateTodoHandler);
+router.delete('/:id', deleteTodoHandler);
 
-// Export the app for testing
-export default app; // Add this line to export your app
+// Start server
+app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+
+export default app;
