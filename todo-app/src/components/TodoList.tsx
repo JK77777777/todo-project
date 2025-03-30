@@ -1,31 +1,32 @@
-import React, { useState, useEffect } from 'react';
+// todo-app/src/components/TodoList.tsx
+import React from 'react';
 import TodoItem from './TodoItem';
-import { Todo, TodoItemProps } from '../types';
-import { backendPort } from '../types';
+import { Todo, TodoItemProps } from '../types';
+import { backendPort } from '../types';
 
-const TodoList: React.FC = () => {
-    // Define state to hold todos
-    const [todos, setTodos] = useState<Todo[]>([]);
-    
-    useEffect(() => {
-        fetch(`http://localhost:${backendPort}/todos`)
-            .then((res) => res.json())
-            .then((data) => setTodos(data))
-            .catch(console.error);
-    }, []);
+interface TodoListProps {
+    todos: Todo[];
+    updateTodos: (newTodos: Todo[] | ((prev: Todo[]) => Todo[])) => void;
+}
 
+interface ExtendedTodoItemProps extends TodoItemProps {
+    updateTodos: (newTodos: Todo[] | ((prev: Todo[]) => Todo[])) => void;
+}
+
+const TodoList: React.FC<TodoListProps> = ({ todos, updateTodos }) => {
     const removeTodo = (id: number) => {
-        setTodos((prev) => prev.filter((item) => item.id !== id));
+        updateTodos((prev) => prev.filter((item) => item.id !== id));
     };
 
     return (
         <div>
             {todos.map((todo) => (
-                <TodoItem 
+                <TodoItem
                     key={todo.id}
                     todo={todo}
                     backendPort={backendPort}
                     onDelete={removeTodo}
+                    updateTodos={updateTodos}
                 />
             ))}
         </div>

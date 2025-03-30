@@ -1,37 +1,43 @@
 import React, { useState } from 'react';
-import { backendPort } from '../types';
+import { backendPort, Todo } from '../types';
 
-const AddTodo: React.FC = () => {
+interface AddTodoProps {
+    updateTodos: (newTodos: Todo[] | ((prev: Todo[]) => Todo[])) => void;
+}
+
+const AddTodo: React.FC<AddTodoProps> = ({ updateTodos }) => {
     const [text, setText] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        fetch(`http://localhost:${backendPort}/todos`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                text: text,
-                isDone: false,
-                createdAt: new Date().toISOString(),
-            }),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log('Todo added:', data);
-                setText(''); // reset the input field
-            })
-            .catch((error) => console.error('Error adding todo:', error));
+        if (!text.trim()) return; // Prevents creation of todo if empty or only spaces
+
+        try {
+            const response = await fetch(`http://localhost:${backendPort}/todos`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text }), // Backend sets isDone, createdAt
+            });
+
+            if (!response.ok) throw new Error('Failed to add todo');
+            const newTodo = await response.json();
+            console.log('Todo added:', newTodo);
+            updateTodos((prev) => [...prev, newTodo]); // Update after confirmation
+            setText(''); // Clear input after success
+        } catch (error) {
+            console.error('Error adding todo:', error);
+        }
     };
 
     return (
         <form onSubmit={handleSubmit}>
             <input
-                type='text'
+                type="text"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                placeholder='New task'
+                placeholder="New task"
             />
-            <button type='submit'>Add Todo</button>
+            <button type="submit">Add Todo</button>
         </form>
     );
 };
