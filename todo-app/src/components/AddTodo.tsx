@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { backendPort } from '../types';
 
 const AddTodo: React.FC = () => {
     const [text, setText] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        fetch('http://localhost:<BACKEND_PORT>/todos', {
+        fetch(`http://localhost:${backendPort}/todos`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
