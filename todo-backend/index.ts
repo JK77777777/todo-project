@@ -20,6 +20,17 @@ sequelize.sync({ force: true })
     .then(() => console.log('Database & tables synced'))
     .catch(error => console.error('Error syncing database:', error));
 
+// GET /todos - Retrieve All Todos
+const getTodosHandler: RequestHandler = async (req, res): Promise<void> => {
+    try {
+        const todos = await Todo.findAll();
+        res.status(200).json(todos);
+    } catch (error) {
+        console.error('Error retrieving todos:', error);
+        res.status(500).json({ error: 'Failed to retrieve todos' });
+    }
+};
+
 // POST /todos - Create a New Todo
 const createTodoHandler: RequestHandler<{}, {}, { text: string }> = async (req, res): Promise<void> => {
     const { text } = req.body;
@@ -30,17 +41,6 @@ const createTodoHandler: RequestHandler<{}, {}, { text: string }> = async (req, 
     } catch (error) {
         console.error('Error creating todo:', error);
         res.status(500).json({ error: 'Failed to create new todo' });
-    }
-};
-
-// GET /todos - Retrieve All Todos
-const getTodosHandler: RequestHandler = async (req, res): Promise<void> => {
-    try {
-        const todos = await Todo.findAll();
-        res.status(200).json(todos);
-    } catch (error) {
-        console.error('Error retrieving todos:', error);
-        res.status(500).json({ error: 'Failed to retrieve todos' });
     }
 };
 

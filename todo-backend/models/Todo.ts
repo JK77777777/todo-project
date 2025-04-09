@@ -1,12 +1,16 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db';
 
+// Define what Todo objects should look like (define Todo class)
+
 class Todo extends Model {
     public id!: number;
     public text!: string;
     public isDone!: boolean;
     public createdAt!: Date;
 }
+
+// Initialize Sequelize data model
 
 Todo.init({
     id: {

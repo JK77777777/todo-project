@@ -15,9 +15,7 @@ interface Todo {
 const API_URL = 'http://localhost:5001/todos';
 
 const App: React.FC = () => {
-    // <Todo[]> defines that todos state will be an array of objects having Todo interface enforced upon them
-    // ([]) is a way to call useState for the first time, here with an empty array
-    const [ todos, setTodos ] = useState<Todo[]>([]);
+   const [ todos, setTodos ] = useState<Todo[]>([]);
     const [ newTodo, setNewTodo ] = useState<string>('');
 
     // Fetch all todos on mount
@@ -29,7 +27,7 @@ const App: React.FC = () => {
 
     const fetchTodos = async () => {
         try {
-            const response = await axios.get<Todo[]>(API_URL); // <Todo[]>(API_URL) tells axios that it should expect an array of Todo items, and the request URL
+            const response = await axios.get<Todo[]>(API_URL);
         } catch (error) {
             console.error('Error fetching todos:', error);
         }
@@ -39,13 +37,13 @@ const App: React.FC = () => {
     const addTodo = async () => {
         const trimmedTodo = newTodo.trim();
         if (trimmedTodo === '') {
-            return; // If newTodo is empty or only spaces, we abort addTodo
+            return;
         }
         try {
-            const response = await axios.post<Todo>(API_URL, { text: newTodo }); // posts single Todo item; sends newTodo as data
+            const response = await axios.post<Todo>(API_URL, { text: newTodo });
             const newTodoItem = response.data;
             const updatedTodoList = todos.concat(newTodoItem);
-            setTodos(updatedTodoList); // ...todos creates copy of todos array, response.data adds the new todo
+            setTodos(updatedTodoList); 
             setNewTodo(''); // clears input field after adding a new todo
         } catch (error) {
             console.error('Error adding todo:', error);
