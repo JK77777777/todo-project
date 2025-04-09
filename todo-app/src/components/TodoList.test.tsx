@@ -1,3 +1,5 @@
+// this code will not be used anymore once App.tsx is updated to contain all frontend code
+
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import App from '../App';

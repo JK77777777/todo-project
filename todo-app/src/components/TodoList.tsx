@@ -1,4 +1,5 @@
-// todo-app/src/components/TodoList.tsx
+// this code will not be used anymore once App.tsx is updated to contain all frontend code
+
 import React from 'react';
 import TodoItem from './TodoItem';
 import { Todo, TodoItemProps } from '../types';

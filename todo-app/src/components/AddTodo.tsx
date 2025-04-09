@@ -1,3 +1,5 @@
+// this code will not be used anymore once App.tsx is updated to contain all frontend code
+
 import React, { useState } from 'react';
 import { backendPort, Todo } from '../types';
 
