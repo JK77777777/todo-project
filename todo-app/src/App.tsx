@@ -28,6 +28,7 @@ const App: React.FC = () => {
     const fetchTodos = async () => {
         try {
             const response = await axios.get<Todo[]>(API_URL);
+            setTodos(response.data);
         } catch (error) {
             console.error('Error fetching todos:', error);
         }
@@ -92,9 +93,8 @@ const App: React.FC = () => {
 
     return (
         <div>
-            <h1>My Todo List</h1>
+            <h1>Todo List</h1>
             
-
             {/* Display todos */}
             <div>
                 {todos.map((todo) => (
@@ -135,7 +135,7 @@ const App: React.FC = () => {
                 <input 
                     type="text"
                     value={newTodo}
-                    onChange={(e) => setNewTodo(e.target.value)}
+                    onChange={(e) => setNewTodo(e.target.value)} // need to understand
                     placeholder="Add a new todo"
                 />
                 <button onClick={addTodo}>Add</button>

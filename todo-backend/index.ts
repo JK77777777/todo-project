@@ -7,11 +7,14 @@ const app = express();
 const router = express.Router();
 const PORT = 5001;
 
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+}));
 app.use(express.json());
 app.use('/todos', router);
 
-// Check Database Connection
+// Check Database Connection - need to understand
 sequelize.authenticate()
     .then(() => console.log('Database connected'))
     .catch(err => console.error('Database connection error:', err));
