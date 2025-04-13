@@ -20,12 +20,11 @@ const App: React.FC = () => {
 
     // Fetch all todos on mount
 
-    // useEffect is a side effect of state changes
-    useEffect(() => { // no parameters
+    useEffect(() => {
         fetchTodos();
-    }, []); // no dependencies, thus only runs once on mount
+    }, []);
 
-    const fetchTodos = async () => {
+    async function fetchTodos() {
         try {
             const response = await axios.get<Todo[]>(API_URL);
             setTodos(response.data);
@@ -35,7 +34,7 @@ const App: React.FC = () => {
     };
 
     // Add a new todo
-    const addTodo = async () => {
+    async function addTodo () {
         const trimmedTodo = newTodo.trim();
         if (trimmedTodo === '') {
             return;
@@ -53,7 +52,7 @@ const App: React.FC = () => {
 
     // Edit todo
 
-    const editTodo = async (id: number, updates: { text?: string, isDone?: boolean}) => {
+    async function editTodo (id: number, updates: { text?: string, isDone?: boolean}) {
         try {
             const response = await axios.put<Todo>(`${API_URL}/${id}`, updates);
             
@@ -74,7 +73,7 @@ const App: React.FC = () => {
 
     // Delete todo
 
-    const deleteTodo = async (id: number) => {
+    async function deleteTodo (id: number) {
         try {
             const response = await axios.delete(`${API_URL}/${id}`);
             
@@ -102,9 +101,9 @@ const App: React.FC = () => {
                         <input
                             type="checkbox"
                             checked={todo.isDone}
-                            onChange={() => editTodo(todo.id, { isDone: !todo.isDone })}
+                            onChange={function() {editTodo(todo.id, { isDone: !todo.isDone })}} // defines anonymous function (because no name) which is only called when tick status changes
                         />
-                        <span 
+                        <span
                             style={{ 
                                 textDecoration: todo.isDone ? 'line-through' : 'none' 
                             }}
@@ -112,7 +111,7 @@ const App: React.FC = () => {
                             {todo.text}
                         </span> 
                         <button 
-                            onClick={() => {
+                            onClick={function() {
                                 const newText = prompt('Edit todo:', todo.text);
                                 if (newText) {
                                     editTodo(todo.id, { text: newText });
@@ -121,8 +120,8 @@ const App: React.FC = () => {
                         >
                             Edit
                         </button>
-                        <button 
-                            onClick={() => deleteTodo(todo.id)}
+                        <button
+                            onClick={function() {deleteTodo(todo.id)}}
                         >
                             Delete
                         </button>
@@ -135,7 +134,11 @@ const App: React.FC = () => {
                 <input 
                     type="text"
                     value={newTodo}
-                    onChange={(e) => setNewTodo(e.target.value)} // need to understand
+                    // 'event' is sent when onChange happens
+                    onChange={function(event) {
+                        console.log(event)
+                        setNewTodo(event.target.value)
+                    }}
                     placeholder="Add a new todo"
                 />
                 <button onClick={addTodo}>Add</button>

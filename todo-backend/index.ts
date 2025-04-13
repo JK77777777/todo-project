@@ -14,7 +14,7 @@ app.use(cors({
 app.use(express.json());
 app.use('/todos', router);
 
-// Check Database Connection - need to understand
+// Check Database Connection - need to understand deeper, maybe rewrite with try-catch
 sequelize.authenticate()
     .then(() => console.log('Database connected'))
     .catch(err => console.error('Database connection error:', err));
