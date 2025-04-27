@@ -10,7 +10,7 @@ class Todo extends Model {
     public createdAt!: Date;
 }
 
-// Initialize Sequelize data model
+// Initialize Sequelize data model - define what each of the rows should look like
 
 Todo.init({
     id: {

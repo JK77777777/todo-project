@@ -3,7 +3,9 @@ import cors from 'cors';
 import sequelize from './db';
 import Todo from './models/Todo';
 
+// Call application which allows us to set up our server
 const app = express();
+
 const router = express.Router();
 const PORT = 5001;
 
@@ -15,15 +17,25 @@ app.use(express.json());
 app.use('/todos', router);
 
 // Check Database Connection - need to understand deeper, maybe rewrite with try-catch
-sequelize.authenticate()
+sequelize
+    .authenticate()
     .then(() => console.log('Database connected'))
     .catch(err => console.error('Database connection error:', err));
 
-sequelize.sync({ force: true }) 
+sequelize
+    .sync({ force: true }) 
     .then(() => console.log('Database & tables synced'))
     .catch(error => console.error('Error syncing database:', error));
 
 // GET /todos - Retrieve All Todos
+// app.get('/todos', (req, res) => {
+//     try {
+
+//     } catch {
+
+//     }
+// })
+
 const getTodosHandler: RequestHandler = async (req, res): Promise<void> => {
     try {
         const todos = await Todo.findAll();
