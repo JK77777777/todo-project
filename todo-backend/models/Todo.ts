@@ -1,39 +1,48 @@
+// Written in separate file than db.ts to simplify exporting
+
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../db';
 
-// Define what Todo objects should look like (define Todo class)
+// Create Todo data model so it can be used in other files. '!' allows us to skip value assignment here and save Todo as a blueprint.
 
 class Todo extends Model {
     public id!: number;
-    public text!: string;
+    public todo!: string;
     public isDone!: boolean;
     public createdAt!: Date;
-}
+};
 
-// Initialize Sequelize data model - define what each of the rows should look like
+// Define properties we expect the database to have (has to be congruent with the database)
 
-Todo.init({
-    id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
+Todo.init(
+    {
+        // Define model attributes
+        id: {
+            type: DataTypes.NUMBER,
+            autoIncrement: true,
+            allowNull: false,
+            primaryKey: true,
+        },
+        todo: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        isDone: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+            allowNull: false,
+        },
+        createdAt: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+            allowNull: false,
+        },
     },
-    text: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    isDone: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-    },
-    createdAt: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-    },
-}, {
-    sequelize,
-    tableName: 'todos',
-    timestamps: false,
-});
+    {
+        // Other model options
+        sequelize, // Connection instance (defined above)
+        modelName: 'todo_app' // If there are bugs, maybe switch back to tableName
+    }
+);
 
 export default Todo;
