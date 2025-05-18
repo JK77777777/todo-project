@@ -7,7 +7,7 @@ import sequelize from '../db';
 
 class Todo extends Model {
     public id!: number;
-    public todo!: string;
+    public text!: string;
     public isDone!: boolean;
     public createdAt!: Date;
 };
@@ -23,7 +23,7 @@ Todo.init(
             allowNull: false,
             primaryKey: true,
         },
-        todo: {
+        text: {
             type: DataTypes.STRING,
             allowNull: false,
         },

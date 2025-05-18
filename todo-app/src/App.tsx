@@ -27,7 +27,7 @@ const App: React.FC = () => {
     async function fetchTodos() {
         try {
             const response = await axios.get<Todo[]>(API_URL);
-            setTodos(response.data);
+            setTodos(response.data); // Gets response data from backend
         } catch (error) {
             console.error('Error fetching todos:', error);
         }
@@ -41,7 +41,7 @@ const App: React.FC = () => {
         }
         try {
             const response = await axios.post<Todo>(API_URL, { text: newTodo });
-            const newTodoItem = response.data;
+            const newTodoItem = response.data; // Gets response data from backend
             const updatedTodoList = todos.concat(newTodoItem);
             setTodos(updatedTodoList); 
             setNewTodo(''); // clears input field after adding a new todo
@@ -59,7 +59,7 @@ const App: React.FC = () => {
             const newTodos: Todo[] = [];
             for (const todo of todos) {
                 if (todo.id === id) {
-                    newTodos.push(response.data);
+                    newTodos.push(response.data); // Set response data from backend
                 } else {
                     newTodos.push(todo);
                 }
