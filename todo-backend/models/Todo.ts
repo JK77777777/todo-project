@@ -18,7 +18,7 @@ Todo.init(
     {
         // Define model attributes
         id: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.INTEGER,
             autoIncrement: true,
             allowNull: false,
             primaryKey: true,
